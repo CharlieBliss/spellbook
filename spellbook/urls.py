@@ -21,6 +21,9 @@ from django.conf.urls import url, include
 from .spells.views import SpellViewSet, SpellListView
 from .characters.views import CharacterViewSet
 from .feats.views import FeatListView, FeatViewSet
+from .boards.views import BoardViewSet
+from .cards.views import CardViewSet
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -33,15 +36,15 @@ class UserViewSet(viewsets.ModelViewSet):
 
 router = routers.DefaultRouter()
 router.register(r'characters', CharacterViewSet, basename='characters')
+router.register(r'boards', BoardViewSet, basename='boards')
+router.register(r'cards', CardViewSet, basename='cards')
 router.register(r'users', UserViewSet)
-router.register(r'spells', SpellViewSet)
-router.register(r'feats', FeatViewSet)
+router.register(r'feats', FeatListView)
+router.register(r'spells', SpellListView)
 
 
 urlpatterns = [
     url(r'^', include(router.urls)),
     path('admin/', admin.site.urls),
-    path('spell', SpellListView.as_view(), name='spells'),
-    path('feat', FeatListView.as_view(), name='feats'),
     url(r'^api-auth/', include('rest_framework.urls'))
 ]

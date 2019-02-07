@@ -11,8 +11,20 @@ class FeatViewSet(viewsets.ModelViewSet):
     serializer_class = FeatSerializer
 
 
-class FeatListView(generics.ListAPIView):
+class FeatListView(viewsets.ModelViewSet):
     queryset = Feat.objects.all()
     serializer_class = FeatSerializer
-    filter_backends = (DjangoFilterBackend,)
-    filter_fields = ('level',)
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+    ordering_fields = ('name', 'level')
+
+    def get_queryset(self):
+        params = self.request.query_params
+        queryset = Feat.objects.filter(
+            level__gt=params.get('level_gt', 0)).filter(
+                level__lt=params.get('level_lt', 10))
+        if 'search' in params:
+            queryset = queryset.filter(name__icontains=params.get('search', ''))
+        if 'traits' in params:
+            queryset = queryset.filter(traits__icontains=params.get('traits', ''))
+
+        return queryset
